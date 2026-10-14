@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cenicare - Funeral Service Records & Scheduling System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- LOGIN SCREEN -->
+    <div id="screen-login" class="screen active">
+        <div class="login-box">
+            <h2>CENICARE</h2>
+            <p style="color: #aaa; font-size: 12px; margin-bottom: 20px;">Funeral Service Records & Scheduling System</p>
+            
+            <div class="input-group">
+                <label>SELECT ACCOUNT TO LOGIN</label>
+                <select id="login-role" style="width: 100%; padding: 10px; border-radius: 5px; border: none; background: #e0e0e0; margin-bottom: 10px;" onchange="updateLoginEmail()">
+                    <option value="jasmine">Jasmine S. Lapaz (Main Operator)</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>E-MAIL</label>
+                <input type="email" id="login-email" value="jasmine.lapaz@cvsu.edu.ph" readonly>
+            </div>
+            <div class="input-group">
+                <label>PASSWORD</label>
+                <input type="password" id="login-password" placeholder="Enter password">
+            </div>
+            
+            <button class="btn-primary" onclick="login()">LOG IN</button>
+            <br><br>
+            <button class="btn-secondary" style="background: transparent; color: #008CBA; border: 1px solid #008CBA; width: 100%; padding: 8px; border-radius: 5px; cursor: pointer; font-size: 12px;" onclick="openRegisterModal()">+ Register New Admin Account</button>
+        </div>
+    </div>
+
+    <div id="app-layout" class="screen">
+        <div class="sidebar">
+            <h3>CENICARE</h3>
+            <button onclick="switchTab('dashboard')">Dashboard</button>
+            <button onclick="switchTab('clients')">Client Information</button>
+            <button onclick="switchTab('deceased')">Deceased Information</button>
+            <button onclick="switchTab('services')">Services Packages</button>
+            <button onclick="switchTab('schedules')">Schedules</button>
+            <button onclick="switchTab('payments')">Clients Payments</button>
+            <button onclick="switchTab('balance')">Clients with Balance</button>
+            <button onclick="switchTab('certifications')">Certifications</button>
+        </div>
+
+        <div class="main-content">
+            <header class="top-bar">
+                <div class="search-container">
+                    <input type="text" id="search-bar" placeholder="Search client or record..." onkeyup="handleSearchInput()">
+                    <div id="search-dropdown" class="search-dropdown"></div>
+                </div>
+                <button class="btn-profile" onclick="switchTab('profile')">USER PROFILE</button>
+            </header>
+
+            <div id="tab-dashboard" class="tab-content active">
+                <h2>Dashboard Overview</h2>
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <h3>Total Records</h3>
+                        <p id="kpi-total">20</p>
+                    </div>
+                    <div class="kpi-card" style="border-left: 5px solid #008CBA;">
+                        <h3>Ongoing Services</h3>
+                        <p id="kpi-ongoing">4</p>
+                    </div>
+                    <div class="kpi-card" style="border-left: 5px solid #d9534f;">
+                        <h3>Pending Balances</h3>
+                        <p id="kpi-balance">5</p>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="dash-widget">
+                        <h3>⚡ Active Ongoing Services & Burials</h3>
+                        <div id="dash-ongoing-list" class="dash-list"></div>
+                    </div>
+                    <div class="dash-widget">
+                        <h3>📄 Clients Needing Certifications / Permits</h3>
+                        <div id="dash-cert-list" class="dash-list"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-clients" class="tab-content">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h2>Client Information Directory</h2>
+                    <button class="btn-primary" style="width: auto; padding: 10px 15px;" onclick="openClientModal()">+ Add New Client</button>
+                </div>
+                <div id="client-list-container" class="client-list"></div>
+            </div>
+
+            <div id="tab-details" class="tab-content">
+                <h2>Client Details Record</h2>
+                <div class="details-card">
+                    <p><strong>Name of Client:</strong> <span id="detail-name">Juan Dela Cruz</span></p>
+                    <p><strong>Deceased Name:</strong> <span id="detail-deceased">Pedro Dela Cruz</span></p>
+                    <p><strong>Service Type:</strong> <span id="detail-service-type">Traditional Burial</span></p>
+                    <p><strong>Package Selected:</strong> <span id="detail-package">Service 4</span></p>
+                    <p><strong>Add-ons:</strong> <span id="detail-addons">None</span></p>
+                    <p><strong>Address:</strong> <span id="detail-address">123 Main St, General Trias, Cavite</span></p>
+                    <p><strong>Relation to Deceased:</strong> <span id="detail-relation">Son</span></p>
+                    <p><strong>Payments Made:</strong> <span id="detail-paid">PHP 15,000</span></p>
+                    <p><strong>Balances:</strong> <span id="detail-balance">PHP 5,000</span></p>
+                    <p><strong>Date of Service / Burial:</strong> <span id="detail-date">October 18, 2026</span></p>
+                    <p><strong>Interment / Disposition:</strong> <span id="detail-burial">Golden Haven Memorial Park</span></p>
+                    <p><strong>Status:</strong> <span id="detail-status" style="font-weight: bold;">Active / Pending Burial</span></p>
+                    <div style="margin-top: 20px; display: flex; gap: 10px;">
+                        <button class="btn-primary" onclick="switchTab('clients')">Back to Client List</button>
+                        <button class="btn-danger" style="width: auto;" onclick="deleteCurrentClient()">Delete Client Record</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-deceased" class="tab-content">
+                <h2>Deceased Information Records</h2>
+                <div id="deceased-list-container" class="client-list"></div>
+            </div>
+
+            <!-- DECEASED INDIVIDUAL RECORD DETAILS WITH CREMATION / BURIAL FLAG -->
+            <div id="tab-deceased-details" class="tab-content">
+                <h2>Deceased Individual Record</h2>
+                <div class="details-card">
+                    <p><strong>Name of Deceased:</strong> <span id="dec-name">Jose Santos</span></p>
+                    <p><strong>Age at Death:</strong> <span id="dec-age">68 years old</span></p>
+                    <p><strong>Date of Passing:</strong> <span id="dec-date">October 01, 2026</span></p>
+                    <p><strong>Cause of Death:</strong> <span id="dec-cause">Pneumonia</span></p>
+                    <p><strong>Representative Client:</strong> <span id="dec-client">Maria Santos</span></p>
+                    <p><strong>Relation:</strong> <span id="dec-relation">Father</span></p>
+                    <p><strong>Disposition Type:</strong> <span id="dec-disposition" style="font-weight: bold; color: #008CBA;">Traditional Burial</span></p>
+                    <p><strong>Interment / Cemetery Location:</strong> <span id="dec-burial">Heritage Park Taguig</span></p>
+                    <br>
+                    <button class="btn-primary" onclick="switchTab('deceased')">Back to Deceased Records</button>
+                </div>
+            </div>
+
+            <div id="tab-schedules" class="tab-content">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h2>Ongoing Services & Upcoming Burial Schedules</h2>
+                    <button class="btn-primary" style="width: auto; padding: 10px 15px;" onclick="openScheduleModal()">+ Add New Schedule</button>
+                </div>
+                <div id="schedules-list-container" class="client-list"></div>
+            </div>
+
+            <div id="tab-services" class="tab-content">
+                <h2>Cenicare Official Service Packages</h2>
+                <p style="color: #666; margin-bottom: 20px;">Packages listed below are ordered from most affordable to premium options.</p>
+                <div class="services-grid">
+                    
+                    <div class="service-box" onclick="selectPackageForClient(0)">
+                        <span class="badge-price">₱25,000</span>
+                        <h3>SERVICE 1</h3>
+                        <h4>Direct Cremation Package</h4>
+                        <ul>
+                            <li>Basic Cremation Services</li>
+                            <li>Standard Wooden Ash Urn</li>
+                            <li>Pick-up & Transfer of Remains</li>
+                            <li>Sanitation & Preparation</li>
+                        </ul>
+                        <button class="btn-select">Select Package</button>
+                    </div>
+
+                    <div class="service-box" onclick="selectPackageForClient(1)">
+                        <span class="badge-price">₱45,000</span>
+                        <h3>SERVICE 2</h3>
+                        <h4>Standard Wooden Casket</h4>
+                        <ul>
+                            <li>Quality Wooden Casket</li>
+                            <li>3-Day Chapel Viewing</li>
+                            <li>Embalming & Beautification</li>
+                            <li>Standard Lights Setup</li>
+                        </ul>
+                        <button class="btn-select">Select Package</button>
+                    </div>
+
+                    <div class="service-box" onclick="selectPackageForClient(2)">
+                        <span class="badge-price">₱65,000</span>
+                        <h3>SERVICE 3</h3>
+                        <h4>Cremation & Memorial Chapel</h4>
+                        <ul>
+                            <li>Full Chapel Viewing (3 Days)</li>
+                            <li>Cremation & Premium Marble Urn</li>
+                            <li>Complete Light & Flower Setup</li>
+                            <li>Hearse Transport</li>
+                        </ul>
+                        <button class="btn-select">Select Package</button>
+                    </div>
+
+                    <div class="service-box featured" onclick="selectPackageForClient(3)">
+                        <span class="badge-price">₱99,750</span>
+                        <h3>SERVICE 4</h3>
+                        <h4>Executive Flexi-Metal Package</h4>
+                        <ul>
+                            <li>Flexi-Metal Quality Casket</li>
+                            <li>6-Day Residence / Chapel Viewing</li>
+                            <li>Complete Light & Floral Setup</li>
+                            <li>Hearse & Interment Transport</li>
+                        </ul>
+                        <button class="btn-select">Select Package</button>
+                    </div>
+
+                    <div class="service-box" onclick="selectPackageForClient(4)">
+                        <span class="badge-price">₱150,000</span>
+                        <h3>SERVICE 5</h3>
+                        <h4>VIP Grand Presidential Casket</h4>
+                        <ul>
+                            <li>Imported Grand Metal Casket</li>
+                            <li>7-Day Executive Chapel Suite</li>
+                            <li>Deluxe Floral & Light Arrangements</li>
+                            <li>Complete Family Assistance</li>
+                        </ul>
+                        <button class="btn-select">Select Package</button>
+                    </div>
+
+                </div>
+            </div>
+
+            <div id="tab-payments" class="tab-content">
+                <h2>Clients Payments Records</h2>
+                <div id="payments-list-container" class="client-list"></div>
+            </div>
+
+            <div id="tab-balance" class="tab-content">
+                <h2>Clients with Outstanding Balance</h2>
+                <div id="balance-list-container" class="client-list"></div>
+            </div>
+
+            <div id="tab-certifications" class="tab-content">
+                <h2>Certifications & Official Documents</h2>
+                <p style="margin-bottom: 15px; color: #555;">Select a client below to issue and print official certificates.</p>
+                <div id="cert-list-container" class="client-list"></div>
+            </div>
+
+            <div id="tab-print-view" class="tab-content">
+                <div class="no-print" style="margin-bottom: 20px; display: flex; gap: 10px;">
+                    <button class="btn-primary" style="width: auto;" onclick="switchTab('certifications')">← Back to Certifications</button>
+                    <button class="btn-primary" style="width: auto; background: #28a745;" onclick="window.print()">🖨️ Print Certificate</button>
+                </div>
+
+                <div id="printable-document" class="printable-paper">
+                    <div class="cert-header">
+                        <h2>CENICARE FUNERAL & MORTUARY SERVICES</h2>
+                        <p>Province of Cavite, Republic of the Philippines</p>
+                        <p style="font-size: 11px; color: #555;">Contact: (046) 437-1234 | Email: records@cenicare.ph</p>
+                        <hr style="margin: 15px 0; border: none; border-top: 2px solid #0B3C4D;">
+                    </div>
+                    
+                    <h2 id="cert-doc-title" style="text-align: center; margin: 25px 0; text-transform: uppercase; letter-spacing: 1px;">CERTIFICATE OF FUNERAL SERVICE</h2>
+
+                    <div id="cert-doc-body" style="line-height: 2; font-size: 15px; margin-bottom: 40px;"></div>
+
+                    <div class="cert-footer" style="margin-top: 80px; display: flex; justify-content: space-between;">
+                        <div style="text-align: center; width: 200px;">
+                            <p><strong><span id="cert-client-sign">Client Representative</span></strong></p>
+                            <p style="border-top: 1px solid #000; margin-top: 40px;">Signature Over Printed Name</p>
+                        </div>
+                        <div style="text-align: center; width: 200px;">
+                            <p><strong>Jasmine S. Lapaz</strong></p>
+                            <p style="border-top: 1px solid #000; margin-top: 40px;">Cenicare Administrator</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-profile" class="tab-content">
+                <h2>User Profile</h2>
+                <div class="profile-card">
+                    <div class="profile-header">
+                        <div class="avatar" id="profile-avatar">J</div>
+                        <div>
+                            <h3 id="profile-name">Jasmine Lapaz</h3>
+                            <p style="color: #666;" id="profile-role">Main Authorized Operator</p>
+                        </div>
+                    </div>
+                    <hr style="margin: 15px 0; border: none; border-top: 1px solid #ddd;">
+                    <p><strong>Email Address:</strong> <span id="profile-email">jasmine.lapaz@cvsu.edu.ph</span></p>
+                    <p><strong>Employee ID:</strong> <span id="profile-id">CVSU-2026-0922</span></p>
+                    <p><strong>Access Level:</strong> <span id="profile-access">Full Operator (Primary Password Holder)</span></p>
+                    <p><strong>Last Login:</strong> October 18, 2026</p>
+                    <div style="margin-top: 20px; display: flex; gap: 10px;">
+                        <button class="btn-primary" onclick="switchTab('dashboard')">Back to Dashboard</button>
+                        <button class="btn-danger" onclick="logout()">Log Out</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- REGISTER NEW ADMIN MODAL -->
+    <div id="register-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeRegisterModal()">&times;</span>
+            <h2 style="color:#0B3C4D;">Register New Admin Account</h2>
+            <p style="font-size: 12px; color: #666; margin-bottom: 15px;">Creates an admin account that requires Jasmine's authorization password for data modifications.</p>
+            
+            <div class="input-group">
+                <label style="color:#333;">Full Name</label>
+                <input type="text" id="reg-name" placeholder="e.g. Maria Clara">
+            </div>
+            <div class="input-group">
+                <label style="color:#333;">Admin E-mail Address</label>
+                <input type="email" id="reg-email" placeholder="e.g. maria.clara@cenicare.ph">
+            </div>
+            <div class="input-group">
+                <label style="color:#333;">Desired Password</label>
+                <input type="password" id="reg-password" placeholder="Set admin account password">
+            </div>
+            <div class="input-group" style="border-top: 1px solid #eee; padding-top: 10px;">
+                <label style="color:#d9534f; font-weight: bold;">JASMINE'S AUTHORIZATION PASSWORD REQUIRED</label>
+                <input type="password" id="reg-auth-password" placeholder="Enter Jasmine's secret password to authorize">
+            </div>
+            <button class="btn-primary" onclick="registerNewAdmin()">Authorize & Create Account</button>
+        </div>
+    </div>
+
+    <!-- ADD NEW CLIENT MODAL -->
+    <div id="client-modal" class="modal">
+        <div class="modal-content" style="width: 550px; max-height: 90vh; overflow-y: auto;">
+            <span class="close-btn" onclick="closeClientModal()">&times;</span>
+            <h2>Add New Client & Service Record</h2>
+            <br>
+            <div class="input-group">
+                <label style="color:#333;">Client Representative Name</label>
+                <input type="text" id="new-client-name" placeholder="e.g. Maria Clara">
+            </div>
+            <div class="input-group">
+                <label style="color:#333;">Address</label>
+                <input type="text" id="new-client-address" placeholder="e.g. Imus, Cavite">
+            </div>
+            <div class="input-group">
+                <label style="color:#333;">Deceased Name</label>
+                <input type="text" id="new-deceased-name" placeholder="e.g. Crisostomo Ibarra">
+            </div>
+            <div class="input-group">
+                <label style="color:#333;">Relation to Deceased</label>
+                <input type="text" id="new-relation" placeholder="e.g. Wife / Daughter / Son">
+            </div>
+
+            <!-- SERVICE TYPE: CREMATION OR BURIAL -->
+            <div class="input-group">
+                <label style="color:#333; font-weight: bold;">Disposition / Service Type</label>
+                <select id="new-service-type" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; background: #fff;" onchange="calculateFormTotals()">
+                    <option value="Traditional Burial">Traditional Burial</option>
+                    <option value="Cremation">Cremation</option>
+                </select>
+            </div>
+
+            <!-- PACKAGE SELECTION -->
+            <div class="input-group">
+                <label style="color:#333; font-weight: bold;">Select Service Package</label>
+                <select id="new-package-select" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; background: #fff;" onchange="calculateFormTotals()">
+                    <option value="25000">Service 1: Direct Cremation Package (₱25,000)</option>
+                    <option value="45000">Service 2: Standard Wooden Casket Package (₱45,000)</option>
+                    <option value="65000">Service 3: Cremation & Memorial Chapel Package (₱65,000)</option>
+                    <option value="99750" selected>Service 4: Executive Flexi-Metal Package (₱99,750)</option>
+                    <option value="150000">Service 5: VIP Grand Presidential Package (₱150,000)</option>
+                </select>
+            </div>
+
+            <!-- ADD-ONS -->
+            <div class="input-group" style="background: #f8f9fa; padding: 12px; border-radius: 6px; border: 1px solid #e0e0e0;">
+                <label style="color:#333; font-weight: bold; margin-bottom: 8px;">Optional Add-ons & Extra Services:</label>
+                <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
+                    <label><input type="checkbox" class="add-on-check" value="3500" onchange="calculateFormTotals()"> Fresh Flower Wreath / Standing Arrangement (+₱3,500)</label>
+                    <label><input type="checkbox" class="add-on-check" value="1200" onchange="calculateFormTotals()"> Premium Photo Frame with Portrait (+₱1,200)</label>
+                    <label><input type="checkbox" class="add-on-check" value="4500" onchange="calculateFormTotals()"> Keepsake Urn / Miniature Keepsakes (+₱4,500)</label>
+                    <label><input type="checkbox" class="add-on-check" value="1500" onchange="calculateFormTotals()"> Additional Viewing Day (+₱1,500 / day)</label>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label style="color:#333; font-weight: bold;">Calculated Package Total (PHP)</label>
+                <input type="text" id="new-calc-total" value="PHP 99,750" readonly style="background:#e9ecef; font-weight:bold; color:#0B3C4D;">
+            </div>
+
+            <div class="input-group">
+                <label style="color:#333;">Amount Paid (PHP)</label>
+                <input type="text" id="new-paid" placeholder="e.g. 15000" onkeyup="calculateFormTotals()">
+            </div>
+            <div class="input-group">
+                <label style="color:#333;">Remaining Balance Due (PHP)</label>
+                <input type="text" id="new-balance" value="PHP 99,750" readonly style="background:#f8d7da; color:#721c24; font-weight:bold;">
+            </div>
+            <div class="input-group">
+                <label style="color:#333;">Burial / Cremation Date & Location</label>
+                <input type="text" id="new-burial" placeholder="e.g. October 25, 2026 - Golden Haven">
+            </div>
+            <div class="input-group">
+                <label style="color:#d9534f; font-weight: bold;" id="auth-label-client">Confirm Password to Save</label>
+                <input type="password" id="new-auth-password" placeholder="Enter password to authorize">
+            </div>
+            <button class="btn-primary" onclick="addNewClient()">Save Client Record</button>
+        </div>
+    </div>
+
+    <!-- SCHEDULE MODAL -->
+    <div id="schedule-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeScheduleModal()">&times;</span>
+            <h2>Schedule Ongoing Service / Burial</h2>
+            <br>
+            <div class="input-group">
+                <label style="color:#333;">Client Representative Name</label>
+                <input type="text" id="sched-client" placeholder="e.g. Maria Clara">
+            </div>
+            <div class="input-group">
+                <label style="color:#333;">Deceased Name</label>
+                <input type="text" id="sched-deceased" placeholder="e.g. Crisostomo Ibarra">
+            </div>
+            <div class="input-group">
+                <label style="color:#333;">Service / Chapel Assignment</label>
+                <input type="text" id="sched-chapel" placeholder="e.g. St. Peter Chapel A / Viewing">
+            </div>
+            <div class="input-group">
+                <label style="color:#333;">Interment / Burial Date & Place</label>
+                <input type="text" id="sched-burial" placeholder="e.g. October 22, 2026 - Golden Haven">
+            </div>
+            <div class="input-group">
+                <label style="color:#d9534f; font-weight: bold;" id="auth-label-sched">Confirm Password to Save</label>
+                <input type="password" id="sched-auth-password" placeholder="Enter password to authorize">
+            </div>
+            <button class="btn-primary" onclick="addNewSchedule()">Save Schedule</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
